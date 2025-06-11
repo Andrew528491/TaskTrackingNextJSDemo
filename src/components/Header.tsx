@@ -14,7 +14,7 @@ const handleLogout = async () => {
   if (error) {
     console.error('Logout error:', error.message)
   } else {
-    router.push('/auth'); // redirect to auth page after logout
+    router.push('/auth') // redirect to auth page after logout
   }
 };
   return (

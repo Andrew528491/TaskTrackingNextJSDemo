@@ -32,13 +32,13 @@ export default function AuthPage() {
 
     if (loginData?.session) {
     // ✅ Successful login
-    router.push('/dashboard');
-    return;
+    router.push('/dashboard')
+    return
     }
 
     if (loginError?.message === 'Invalid Login Credentials') {
-      alert('Invalid email or password. Try again or reset your password.');
-      return;
+      alert('Invalid email or password. Try again or reset your password.')
+      return
     } else {
     const { error } = await supabase.auth.signUp({
       email,
