@@ -66,12 +66,26 @@ export default function DashboardPage() {
     setLoading(false)
   }
 
+  const handleCompleteTask = async (taskId: number) => {
+  setLoading(true)
+  const { error } = await supabase
+    .from('tasks')
+    .delete()
+    .eq('id', taskId)
+
+  if (!error) {
+    setTasks(prev => prev.filter(task => task.id !== taskId))
+  }
+
+  setLoading(false)
+}
+
   return (
     <div className="p-6 space-y-8">
       <h2 className="text-2xl font-semibold">Your Tasks</h2>
 
       {/* Task Form */}
-      <form onSubmit={handleAddTask} className="space-y-4 max-w-md">
+      <form onSubmit={handleAddTask} className="space-y-2 max-w-md ">
         <input
           type="text"
           placeholder="Task title"
@@ -92,31 +106,43 @@ export default function DashboardPage() {
           onChange={(date: Date | null) => setDueDate(date ? date.toISOString().split('T')[0] : '')}
           className="w-full border px-3 py-2 rounded"
         />
+        <div></div>
         <button
           type="submit"
           disabled={loading}
           className="bg-slate-600 text-white px-4 py-2 rounded hover:bg-slate-800 transition"
         >
-          {loading ? 'Adding...' : 'Add Task'}
+          {loading ? 'Updating...' : 'Add Task'}
         </button>
       </form>
 
       {/* Task List */}
       <ul className="space-y-3">
         {tasks.length === 0 ? (
-          <p className="text-gray-500">You have no tasks yet.</p>
+          <p className="text-gray-500">Congratulations! You have no tasks currently.</p>
         ) : (
           tasks.map(task => (
-            <li key={task.id} className="border p-4 rounded shadow-sm">
+            <li key={task.id} className="border p-4 rounded shadow-sm flex justify-between items-center">
+              <div>
               <h3 className="font-semibold text-lg">{task.title}</h3>
+              
               {task.description && <p className="text-gray-600">{task.description}</p>}
               {task.due_date && (
                 <p className="text-sm text-gray-500">Due: {new Date(task.due_date).toLocaleDateString()}</p>
+                
               )}
+              </div>
+              <button
+                  onClick={() => handleCompleteTask(task.id)}
+                  disabled={loading}
+                  className="ml-4 bg-slate-600 hover:bg-slate-800 text-white px-3 py-1 rounded ">
+                  Mark as Completed
+                </button>  
             </li>
           ))
         )}
       </ul>
     </div>
+    
   )
 }
