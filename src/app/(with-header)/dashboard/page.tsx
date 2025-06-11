@@ -40,7 +40,7 @@ export default function DashboardPage() {
     }
 
     fetchTasks()
-  }, [])
+  }, [router])
 
   const handleAddTask = async (e: React.FormEvent) => {
     e.preventDefault()

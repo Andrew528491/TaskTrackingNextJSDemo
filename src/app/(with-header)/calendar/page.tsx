@@ -33,7 +33,7 @@ export default function CalendarPage() {
     }
 
     fetchTasks()
-  }, [])
+  }, [router])
 
   const tasksByDate = tasks.reduce<Record<string, Task[]>>((acc, task) => {
     if (!task.due_date) return acc
