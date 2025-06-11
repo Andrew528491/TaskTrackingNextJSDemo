@@ -42,6 +42,7 @@ export default function DashboardPage() {
     fetchTasks()
   }, [router])
 
+  //Add a task
   const handleAddTask = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -57,15 +58,22 @@ export default function DashboardPage() {
     }).select().single()
 
     if (!error && data) {
-      setTasks(prev => [...prev, data])
-      setTitle('')
-      setDescription('')
-      setDueDate('')
+      setTasks(prev => {
+      const updated = [...prev, data]
+      // Sort by due_date ascending, handling nulls last
+      updated.sort((a, b) => {
+        if (!a.due_date) return 1
+        if (!b.due_date) return -1
+        return new Date(a.due_date).getTime() - new Date(b.due_date).getTime()
+      })
+      return updated
+    })
     }
 
     setLoading(false)
   }
 
+  //Complete a task and remove it from supabase
   const handleCompleteTask = async (taskId: number) => {
   setLoading(true)
   const { error } = await supabase
@@ -82,7 +90,7 @@ export default function DashboardPage() {
 
   return (
     <div className="p-6 space-y-8">
-      <h2 className="text-2xl font-semibold">Your Tasks</h2>
+      <h2 className="text-2xl font-bold">Your Tasks</h2>
 
       {/* Task Form */}
       <form onSubmit={handleAddTask} className="space-y-2 max-w-md ">
