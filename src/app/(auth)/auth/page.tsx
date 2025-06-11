@@ -25,15 +25,35 @@ export default function AuthPage() {
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault()
-    const { error } = await supabase.auth.signUp({
+    const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
+
+    if (loginData?.session) {
+    // ✅ Successful login
+    router.push('/dashboard');
+    return;
+    }
+
+    if (loginError?.message === 'Invalid Login Credentials') {
+      alert('Invalid email or password. Try again or reset your password.');
+      return;
+    } else {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+      emailRedirectTo: `http://localhost:3000/auth/callback`
+  }
+  });
     if (error) {
       setError(error.message)
     } else {
-      router.push('/dashboard')
+      router.push('auth/callback')
     }
+  }
+
   }
 
   return (
@@ -56,13 +76,13 @@ export default function AuthPage() {
         />
         {error && <p className="text-red-500">{error}</p>}
         <button
-          className="bg-blue-600 text-white rounded p-2"
+          className="bg-slate-600 text-white rounded p-2 hover:bg-slate-800"
           onClick={handleLogin}
         >
           Log In
         </button>
         <button
-          className="bg-green-600 text-white rounded p-2"
+          className="bg-slate-600 text-white rounded p-2 hover:bg-slate-800"
           onClick={handleSignup}
         >
           Sign Up
